@@ -4,13 +4,16 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { JwtPayload } from './interface/jwt-paylot.interface';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>
+    private readonly userRepository: Repository<User>,
+    private readonly jwtService: JwtService,
   ) {}
   
   async create(createUserDto: CreatUserDto) {
@@ -27,7 +30,10 @@ export class AuthService {
       await this.userRepository.save(user);
       delete user.password;
 
-      return user;
+      return {
+        ...user,
+        token: this.getJwtToken({email: user.email})
+      }
     } 
     catch (error) 
     {
@@ -53,7 +59,16 @@ export class AuthService {
       throw new UnauthorizedException('Credenciales incorrectas (password)');
     }
 
-    return user;
+    return {
+      ...user,
+      token: this.getJwtToken({email: user.email})
+    }
+  }
+
+  // genero el token
+  private getJwtToken( payload: JwtPayload) {
+    const token = this.jwtService.sign(payload);
+    return token;
   }
 
   private handleDBError(error: any): never {
