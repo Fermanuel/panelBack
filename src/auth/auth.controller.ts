@@ -30,7 +30,7 @@ export class AuthController {
   }
 
 
-  //PRUEBAS DE AUTEHTICACION
+  //PRUEBAS DE AUTEHTICACION DE USUARIOS
 
   @Get('user')
   @Auth(ValidRoles.admin, ValidRoles.doctor)
