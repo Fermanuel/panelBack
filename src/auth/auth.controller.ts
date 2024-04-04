@@ -32,7 +32,7 @@ export class AuthController {
 
   //PRUEBAS DE AUTEHTICACION
 
-  @Get('private3')
+  @Get('user')
   @Auth(ValidRoles.admin, ValidRoles.doctor)
   private3(
     @GetUser() user: User
