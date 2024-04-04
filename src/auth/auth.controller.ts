@@ -21,7 +21,7 @@ export class AuthController {
   }
 
 
-  @Get('check-status')
+  @Get('check-status-user')
   @Auth()
   checkAuthStatus(
     @GetUser() user: User
@@ -30,9 +30,9 @@ export class AuthController {
   }
 
 
-  //PRUEBAS DE AUTEHTICACION
+  // TODO PRUEBAS DE AUTEHTICACION
 
-  @Get('private3')
+  @Get('user')
   @Auth(ValidRoles.admin)
   private3(
     @GetUser() user: User
