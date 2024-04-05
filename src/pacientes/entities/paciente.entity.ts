@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { IsDate, IsDateString } from "class-validator";
+import { BeforeInsert, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Paciente {
@@ -6,22 +7,19 @@ export class Paciente {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
+    @Column('text')
+    nombre: string;
+
+    @Column('text')
+    apellidoPaterno: string;
+
+    @Column('text')
+    apellidoMaterno: string;
+
     @Column('text', {
-        unique: true,
+        nullable: true,
     })
-    NoControl: string;
-
-    @Column('text')
-    Nombre: string;
-
-    @Column('text')
-    ApellidoPaterno: string;
-
-    @Column('text')
-    ApellidoMaterno: string;
-
-    @Column('date')
-    cumple: Date;
+    cumple: string;
 
     @Column('text', {
         nullable: true,
@@ -44,8 +42,20 @@ export class Paciente {
     })
     correoPer: string;
 
-    @Column('date', {
-        default: () => 'CURRENT_TIMESTAMP',
-    })
+    @Column('text')
+    genero: string;
+
+    @CreateDateColumn()
     created_at: Date;
+
+    // historialMedico;
+    // No de sesiones
+    //doctor
+
+    @BeforeInsert()
+    Mayusculas(){
+        this.nombre = this.nombre.toUpperCase();
+        this.apellidoPaterno = this.apellidoPaterno.toUpperCase();
+        this.apellidoMaterno = this.apellidoMaterno.toUpperCase();
+    }
 }

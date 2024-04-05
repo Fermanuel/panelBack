@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { PacientesModule } from './pacientes/pacientes.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { PacientesModule } from './pacientes/pacientes.module';
     }),
     AuthModule,
     PacientesModule,
+    CommonModule,
   ],
 })
 export class AppModule {}
