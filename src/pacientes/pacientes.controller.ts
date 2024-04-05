@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe, Query } from '@nestjs/common';
 import { PacientesService } from './pacientes.service';
 import { CreatePacienteDto } from './dto/create-paciente.dto';
 import { UpdatePacienteDto } from './dto/update-paciente.dto';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
 @Controller('pacientes')
 export class PacientesController {
@@ -13,13 +14,15 @@ export class PacientesController {
   }
 
   @Get()
-  findAll() {
-    return this.pacientesService.findAll();
+  findAll(@Query() paginationDto: PaginationDto) {
+    // console.log(paginationDto);
+    return this.pacientesService.findAll(paginationDto);
   }
 
-  @Get(':id')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.pacientesService.findOne( id );
+  // * term = termino de busqueda (id, nombre o apellido, etc.)
+  @Get(':term')
+  findOne(@Param('term') term: string) {
+    return this.pacientesService.findOne( term );
   }
 
   @Patch(':id')

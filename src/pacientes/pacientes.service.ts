@@ -4,6 +4,8 @@ import { UpdatePacienteDto } from './dto/update-paciente.dto';
 import { Paciente } from './entities/paciente.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { validate as IsUUID } from 'uuid';
 
 @Injectable()
 export class PacientesService {
@@ -11,7 +13,7 @@ export class PacientesService {
 
   private readonly logger = new Logger('PacientesService')
   
-  //Nest ya traer el repositorio de la entidad paciente solo hay que inyectarlo en el constructor del servicio
+  // * Nest ya traer el repositorio de la entidad paciente solo hay que inyectarlo en el constructor del servicio
   constructor(
     @InjectRepository(Paciente)
     private readonly pacienteRepository: Repository<Paciente>
@@ -19,7 +21,7 @@ export class PacientesService {
   
   async create(createPacienteDto: CreatePacienteDto) {
 
-    // usar el patron respository para manejar la base de datos
+    // * usar el patron respository para manejar la base de datos
     try {
 
       const paciente = this.pacienteRepository.create(createPacienteDto);
@@ -33,17 +35,33 @@ export class PacientesService {
   }
 
   // TODO: Paginar los resultados
-  findAll() {
-    return this.pacienteRepository.find({});
+  findAll( paginationDto: PaginationDto ) {
+    
+    const { limit = 10, offset = 0 } = paginationDto;
+    
+    return this.pacienteRepository.find({
+      take: limit,
+      skip: offset
+
+      // TODO relaciones
+    });
   }
 
-  async findOne(id: string) {
+  async findOne(term: string) {
 
-    const paciente = await this.pacienteRepository.findOneBy({ id });
+    let paciente: Paciente;
+
+    // * Si el termino es un UUID se busca por id, de lo contrario se busca por correoTec
+    if(IsUUID(term) ) {
+      paciente = await this.pacienteRepository.findOneBy({ id: term });
+    } else {
+      paciente = await this.pacienteRepository.findOneBy({ correoTec: term});
+    }
 
     if(!paciente){
-      throw new NotFoundException('Paciente no encontrado');
+      throw new NotFoundException(`Paciente ${term} no encontrado`);
     }
+
     return paciente;
   }
 
