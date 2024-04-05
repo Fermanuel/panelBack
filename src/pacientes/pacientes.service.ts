@@ -51,11 +51,17 @@ export class PacientesService {
 
     let paciente: Paciente;
 
-    // * Si el termino es un UUID se busca por id, de lo contrario se busca por correoTec
-    if(IsUUID(term) ) {
+    // * Verificar si el termino de busqueda es un UUID o un correo o telefono
+    if (IsUUID(term)) {
       paciente = await this.pacienteRepository.findOneBy({ id: term });
-    } else {
-      paciente = await this.pacienteRepository.findOneBy({ correoTec: term});
+    } 
+    else {
+      paciente = await this.pacienteRepository.findOne({
+        where: [
+          { correoTec: term.toLowerCase() },
+          { telefono: term } 
+        ],
+      });
     }
 
     if(!paciente){
