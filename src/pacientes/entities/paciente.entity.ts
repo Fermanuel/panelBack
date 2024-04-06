@@ -33,11 +33,6 @@ export class Paciente {
 
     @Column('text', {
         unique: true,
-    })
-    correoTec: string;
-
-    @Column('text', {
-        unique: true,
         nullable: true,
     })
     correoPer: string;
@@ -48,8 +43,8 @@ export class Paciente {
     @CreateDateColumn()
     created_at: Date;
 
-    // historialMedico;
-    // No de sesiones
+    // historialAcademico;
+    // No. de sesiones
     //doctor
 
     @BeforeInsert()

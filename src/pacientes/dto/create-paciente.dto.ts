@@ -27,10 +27,6 @@ export class CreatePacienteDto {
     @IsString()
     @MinLength(10)
     telefono: string;
-    
-    @IsString()
-    @MinLength(10)
-    correoTec: string;
 
     @IsIn(['Masculino', 'Femenino', 'Otro'])
     genero: string;

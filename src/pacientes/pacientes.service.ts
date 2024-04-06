@@ -13,7 +13,7 @@ export class PacientesService {
 
   private readonly logger = new Logger('PacientesService')
   
-  // * Nest ya traer el repositorio de la entidad paciente solo hay que inyectarlo en el constructor del servicio
+  // * Nest ya traer el patron repositorio de la entidad, solo hay que inyectarlo en el constructor del servicio
   constructor(
     @InjectRepository(Paciente)
     private readonly pacienteRepository: Repository<Paciente>
@@ -58,8 +58,8 @@ export class PacientesService {
     else {
       paciente = await this.pacienteRepository.findOne({
         where: [
-          { correoTec: term.toLowerCase() },
-          { telefono: term } 
+          { correoPer: term.toLowerCase() },
+          { telefono: term },
         ],
       });
     }
@@ -71,8 +71,25 @@ export class PacientesService {
     return paciente;
   }
 
-  update(id: number, updatePacienteDto: UpdatePacienteDto) {
-    return `This action updates a #${id} paciente`;
+  async update(id: string, updatePacienteDto: UpdatePacienteDto) {
+    
+    const paciente = await this.pacienteRepository.preload({
+      id: id,
+      ...updatePacienteDto
+    });
+
+    if(!paciente){
+      throw new NotFoundException(`Paciente ${id} no encontrado`);
+    }
+
+    try {
+
+      await this.pacienteRepository.save(paciente);
+      return paciente;
+
+    } catch (error) {
+      this.handleDBExceptions(error);
+    }
   }
 
   async remove(id: string) {

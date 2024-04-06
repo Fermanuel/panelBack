@@ -26,8 +26,8 @@ export class PacientesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePacienteDto: UpdatePacienteDto) {
-    return this.pacientesService.update(+id, updatePacienteDto);
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() updatePacienteDto: UpdatePacienteDto) {
+    return this.pacientesService.update(id, updatePacienteDto);
   }
 
   @Delete(':id')
