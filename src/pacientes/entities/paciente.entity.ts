@@ -1,5 +1,5 @@
-import { IsDate, IsDateString } from "class-validator";
-import { BeforeInsert, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn , OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { SchoolData } from "./index";
 
 @Entity()
 export class Paciente {
@@ -43,7 +43,13 @@ export class Paciente {
     @CreateDateColumn()
     created_at: Date;
 
-    // historialAcademico;
+    //datos de la escuela
+ 
+    @OneToOne(() => SchoolData, (schooldata) => schooldata.paciente, {cascade: true})
+    @JoinColumn({name: 'school_data'})
+    schoolData: SchoolData;
+    
+    
     // No. de sesiones
     //doctor
 

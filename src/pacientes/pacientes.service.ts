@@ -1,11 +1,13 @@
 import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+
 import { CreatePacienteDto } from './dto/create-paciente.dto';
 import { UpdatePacienteDto } from './dto/update-paciente.dto';
-import { Paciente } from './entities/paciente.entity';
+
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { validate as IsUUID } from 'uuid';
+import { SchoolData, Paciente } from './entities';
 
 @Injectable()
 export class PacientesService {
@@ -16,18 +18,19 @@ export class PacientesService {
   // * Nest ya traer el patron repositorio de la entidad, solo hay que inyectarlo en el constructor del servicio
   constructor(
     @InjectRepository(Paciente)
-    private readonly pacienteRepository: Repository<Paciente>
+    private readonly pacienteRepository: Repository<Paciente>,
+
+    @InjectRepository(SchoolData)
+    private readonly schoolDataRepository: Repository<SchoolData>,
   ){}
   
+  // * usar el patron respository para manejar la base de datos
   async create(createPacienteDto: CreatePacienteDto) {
 
-    // * usar el patron respository para manejar la base de datos
     try {
-
       const paciente = this.pacienteRepository.create(createPacienteDto);
       await this.pacienteRepository.save(paciente);
       return paciente;
-    
     }
     catch (error) {
       this.handleDBExceptions(error);
