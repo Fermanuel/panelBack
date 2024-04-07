@@ -1,4 +1,6 @@
-import { IsArray, IsIn, IsOptional, IsString, MaxLength, MinLength} from "class-validator";
+import { Type } from "class-transformer";
+import { IsIn, IsOptional, IsString, MinLength, ValidateNested} from "class-validator";
+import { CreateSchoolDataDto } from "./create-schoolData.dto";
 
 export class CreatePacienteDto {
 
@@ -35,28 +37,8 @@ export class CreatePacienteDto {
     @MinLength(10)
     @IsOptional()
     correoPer?: string;
-}
 
-
-// dto para crear data de la escuela
-
-export class CreateSchoolDataDto {
-
-    @IsString()
-    @MinLength(8)
-    @MaxLength(8)
-    noControl: string;
-
-    @IsString()
-    @MinLength(1)
-    noSemestre: string;
-
-    @IsString()
-    @MinLength(1)
-    correTec: string;
-
-    @IsIn(['Unidad Tomas Aquino', 'Unidad Otay'])
-    plantel: string;
-
-    // carrera
+    @ValidateNested()
+    @Type(() => CreateSchoolDataDto)
+    schoolData: CreateSchoolDataDto;
 }

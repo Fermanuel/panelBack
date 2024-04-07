@@ -15,7 +15,7 @@ export class SchoolData {
     noControl: string;
 
     @Column('text')
-    semestre: string;
+    noSemestre: string;
 
     @Column('text', {
         unique: true,
@@ -26,6 +26,7 @@ export class SchoolData {
     @IsIn(['Tomas Aquino', 'Otay'])
     plantel: string;
 
+    // 1:1 relacion con Paciente
     @OneToOne(() => Paciente, (paciente) => paciente.schoolData)
     paciente: Paciente;
 }

@@ -44,13 +44,10 @@ export class Paciente {
     created_at: Date;
 
     //datos de la escuela
- 
     @OneToOne(() => SchoolData, (schooldata) => schooldata.paciente, {cascade: true})
     @JoinColumn({name: 'school_data'})
     schoolData: SchoolData;
     
-    
-    // No. de sesiones
     //doctor
 
     @BeforeInsert()
