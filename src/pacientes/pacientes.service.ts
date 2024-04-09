@@ -48,16 +48,17 @@ export class PacientesService {
     
   }
   
-  // TODO: Paginar los resultados
   findAll( paginationDto: PaginationDto ) {
     
     const { limit = 10, offset = 0 } = paginationDto;
     
     return this.pacienteRepository.find({
       take: limit,
-      skip: offset
+      skip: offset,
 
-      // TODO relaciones
+      // TODO relaciones de la tabla
+      relations: ['schoolData'],
+      
     });
   }
 
@@ -75,6 +76,7 @@ export class PacientesService {
           { correoPer: term.toLowerCase() },
           { telefono: term },
         ],
+        relations: ['schoolData']
       });
     }
 
