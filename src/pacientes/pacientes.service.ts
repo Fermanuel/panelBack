@@ -56,7 +56,7 @@ export class PacientesService {
       take: limit,
       skip: offset,
 
-      // TODO relaciones de la tabla
+      // TODO relaciones de la tabla schoolData
       relations: ['schoolData'],
       
     });
@@ -76,6 +76,7 @@ export class PacientesService {
           { correoPer: term.toLowerCase() },
           { telefono: term },
         ],
+        // TODO relaciones de la tablas schoolData
         relations: ['schoolData']
       });
     }
@@ -87,11 +88,15 @@ export class PacientesService {
     return paciente;
   }
 
+  // TODO: implementar la actualizacion para ambas tablas
   async update(id: string, updatePacienteDto: UpdatePacienteDto) {
     
     const paciente = await this.pacienteRepository.preload({
       id: id,
-      ...updatePacienteDto
+      ...updatePacienteDto,
+
+      // ! revicion de la relacion para ver si se actualiza o no
+      schoolData: updatePacienteDto.schoolData
     });
 
     if(!paciente){
