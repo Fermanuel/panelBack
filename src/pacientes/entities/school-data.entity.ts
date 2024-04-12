@@ -1,6 +1,5 @@
 import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Paciente } from "./index";
-import { IsIn } from "class-validator";
 
 @Entity()
 export class SchoolData {
@@ -23,7 +22,7 @@ export class SchoolData {
     })
     correoTec: string;
 
-    @IsIn(['Tomas Aquino', 'Otay'])
+    @Column('text')
     plantel: string;
 
     // 1:1 relacion con Paciente
