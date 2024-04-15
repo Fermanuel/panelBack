@@ -57,7 +57,6 @@ export class PacientesService {
       take: limit,
       skip: offset,
 
-      // TODO relaciones de la tabla schoolData
       relations: ['schoolData'],
     });
   }
@@ -67,15 +66,13 @@ export class PacientesService {
 
     // * Verificar si el termino de busqueda es un UUID o un correo o telefono
     if (IsUUID(term)) {
-      
-      // TODO: traer la data de la tabla schoolData
 
       paciente = await this.pacienteRepository.findOneBy({ id: term,  });
 
     } else {
       paciente = await this.pacienteRepository.findOne({
         where: [{ correoPer: term.toLowerCase() }, { telefono: term }],
-        // TODO relaciones de la tablas schoolData
+
         relations: ['schoolData'],
       });
     }
@@ -87,7 +84,6 @@ export class PacientesService {
     return paciente;
   }
 
-  // TODO: implementar la actualizacion para ambas tablas
   async update(id: string, updatePacienteDto: UpdatePacienteDto) {
 
     const { schoolData, ...toUpdata } = updatePacienteDto;
