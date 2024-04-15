@@ -1,22 +1,26 @@
 // dto para crear data de la escuela
 
-import { IsIn, IsString, MaxLength, MinLength } from "class-validator";
+import { IsIn, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
 
 export class CreateSchoolDataDto {
 
     @IsString()
     @MinLength(8)
     @MaxLength(8)
-    noControl: string;
+    @IsOptional()
+    noControl?: string;
 
     @IsString()
     @MinLength(1)
-    noSemestre: string;
+    @IsOptional()
+    noSemestre?: string;
 
     @IsString()
     @MinLength(1)
-    correoTec: string;
+    @IsOptional()
+    correoTec?: string;
 
     @IsIn(['Unidad Tomas Aquino', 'Unidad Otay'])
-    plantel: string;
+    @IsOptional()
+    plantel?: string;
 }

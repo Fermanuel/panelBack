@@ -1,4 +1,4 @@
-import { BeforeInsert, Column, CreateDateColumn, Entity, JoinColumn , OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { SchoolData } from "./index";
 
 @Entity()
@@ -44,8 +44,7 @@ export class Paciente {
     created_at: Date;
 
     //datos de la escuela
-    @OneToOne(() => SchoolData, (schooldata) => schooldata.paciente, {cascade: true})
-    @JoinColumn({name: 'school_data'})
+    @OneToOne(() => SchoolData, (schooldata) => schooldata.paciente)
     schoolData: SchoolData;
     
     //doctor

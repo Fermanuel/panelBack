@@ -4,7 +4,7 @@ import { CreatePacienteDto, UpdatePacienteDto, CreateSchoolDataDto } from './dto
 import {  Paciente, SchoolData } from './entities';
 
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { validate as IsUUID } from 'uuid';
 
@@ -20,14 +20,19 @@ export class PacientesService {
 
     @InjectRepository(SchoolData)
     private readonly schoolDataRepository: Repository<SchoolData>,
+
+    private readonly dataSource: DataSource,
   ) {}
 
   // * usar el patron respository para manejar la base de datos
   async create(createPacienteDto: CreatePacienteDto) {
+    
     try {
+      
       const schoolData = this.schoolDataRepository.create(
         createPacienteDto.schoolData,
       );
+
       await this.schoolDataRepository.save(schoolData);
 
       const paciente = this.pacienteRepository.create({
@@ -38,7 +43,9 @@ export class PacientesService {
       await this.pacienteRepository.save(paciente);
 
       return paciente;
-    } catch (error) {
+    } 
+    catch (error) {
+      
       this.handleDBExceptions(error);
     }
   }
@@ -60,7 +67,11 @@ export class PacientesService {
 
     // * Verificar si el termino de busqueda es un UUID o un correo o telefono
     if (IsUUID(term)) {
-      paciente = await this.pacienteRepository.findOneBy({ id: term });
+      
+      // TODO: traer la data de la tabla schoolData
+
+      paciente = await this.pacienteRepository.findOneBy({ id: term,  });
+
     } else {
       paciente = await this.pacienteRepository.findOne({
         where: [{ correoPer: term.toLowerCase() }, { telefono: term }],
@@ -79,27 +90,57 @@ export class PacientesService {
   // TODO: implementar la actualizacion para ambas tablas
   async update(id: string, updatePacienteDto: UpdatePacienteDto) {
 
+    const { schoolData, ...toUpdata } = updatePacienteDto;
+
     const paciente = await this.pacienteRepository.preload({
       id: id,
-      ...updatePacienteDto,
+      ...toUpdata,
+      schoolData: schoolData,
     });
 
     if(!paciente){
       throw new NotFoundException(`Paciente ${id} no encontrado`);
     }
 
+    // crear query runner para actualizar la tabla schoolData
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
     try {
 
-      await this.pacienteRepository.save(paciente);
+      if (schoolData) {
+
+        await queryRunner.manager.update(SchoolData, { paciente: id }, schoolData);
+
+        await queryRunner.manager.save(paciente);
+        await queryRunner.commitTransaction();
+
+      }
+
+      // ? conviento los campos de nombre, apellidoPaterno y apellidoMaterno a mayusculas
+      paciente.nombre = paciente.nombre.toUpperCase();
+      paciente.apellidoPaterno = paciente.apellidoPaterno.toUpperCase();
+      paciente.apellidoMaterno = paciente.apellidoMaterno.toUpperCase();
+
       return paciente;
 
-    } catch (error) {
+    } 
+    catch (error) {
+
+      await queryRunner.rollbackTransaction();
       this.handleDBExceptions(error);
+
+    } 
+    finally {
+      await queryRunner.release();
     }
   }
 
   async remove(id: string) {
     const paciente = await this.findOne(id);
+    
 
     await this.pacienteRepository.remove(paciente);
   }
