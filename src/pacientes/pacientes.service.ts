@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 
 import { CreatePacienteDto, UpdatePacienteDto, CreateSchoolDataDto } from './dto/index';
-import {  Paciente, SchoolData } from './entities';
+import {  Carrera, Paciente, SchoolData } from './entities';
 
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
@@ -21,6 +21,9 @@ export class PacientesService {
     @InjectRepository(SchoolData)
     private readonly schoolDataRepository: Repository<SchoolData>,
 
+    @InjectRepository(Carrera)
+    private readonly carreraRepository: Repository<Carrera>,
+
     private readonly dataSource: DataSource,
   ) {}
 
@@ -32,6 +35,13 @@ export class PacientesService {
       const schoolData = this.schoolDataRepository.create(
         createPacienteDto.schoolData,
       );
+
+      // * Crear una nueva instancia de Carrera y guardarla
+      const carrera = this.carreraRepository.create(createPacienteDto.schoolData.carrera);
+      const savedCarrera = await this.carreraRepository.save(carrera);
+
+      // * Asociar la carrera con los datos de la escuela
+      schoolData.carrera = savedCarrera;
 
       await this.schoolDataRepository.save(schoolData);
 
@@ -57,7 +67,7 @@ export class PacientesService {
       take: limit,
       skip: offset,
 
-      relations: ['schoolData'],
+      relations: ['schoolData', 'schoolData.carrera'],
     });
   }
 

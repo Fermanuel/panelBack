@@ -1,6 +1,8 @@
 // dto para crear data de la escuela
 
-import { IsIn, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
+import { IsIn, IsOptional, IsString, MaxLength, MinLength, ValidateNested } from "class-validator";
+import { CreateCarreraDto } from "./create-carrera.dto";
+import { Type } from "class-transformer";
 
 export class CreateSchoolDataDto {
 
@@ -23,4 +25,8 @@ export class CreateSchoolDataDto {
     @IsIn(['Unidad Tomas Aquino', 'Unidad Otay'])
     @IsOptional()
     plantel?: string;
+
+    @ValidateNested()
+    @Type(() => CreateCarreraDto)
+    carrera: CreateCarreraDto;
 }

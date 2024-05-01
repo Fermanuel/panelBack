@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Paciente } from "./index";
+import { Carrera, Paciente } from "./index";
 
 @Entity()
 export class SchoolData {
@@ -32,4 +32,8 @@ export class SchoolData {
     )
     @JoinColumn({name: 'paciente_data'})
     paciente: Paciente;
+
+    // 1:1 relacion con Carrera
+    @OneToOne(() => Carrera, (carrera) => carrera.schoolData)
+    carrera: Carrera;
 }
