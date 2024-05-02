@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { SchoolData } from "./school-data.entity";
 
 @Entity('carrera')
@@ -8,13 +8,11 @@ export class Carrera {
     id: number;
 
     @Column('text',{
-        unique: true,
         nullable: false,        
     })
     nombre: string;
 
     @Column('text',{
-        unique: true,
         nullable: false,
     })
     nomenclatura: string;

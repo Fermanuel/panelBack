@@ -83,7 +83,7 @@ export class PacientesService {
       paciente = await this.pacienteRepository.findOne({
         where: [{ correoPer: term.toLowerCase() }, { telefono: term }],
 
-        relations: ['schoolData'],
+        relations: ['schoolData', 'schoolData.carrera'],
       });
     }
 
@@ -94,55 +94,94 @@ export class PacientesService {
     return paciente;
   }
 
+
   async update(id: string, updatePacienteDto: UpdatePacienteDto) {
-
-    const { schoolData, ...toUpdata } = updatePacienteDto;
-
-    const paciente = await this.pacienteRepository.preload({
-      id: id,
-      ...toUpdata,
-      schoolData: schoolData,
-    });
-
-    if(!paciente){
+    
+    const paciente = await this.pacienteRepository.findOneBy({ id: id });
+  
+    if (!paciente) {
       throw new NotFoundException(`Paciente ${id} no encontrado`);
     }
+  
+    // Actualizar las propiedades del paciente
+    Object.assign(paciente, updatePacienteDto);
 
-    // crear query runner para actualizar la tabla schoolData
-    const queryRunner = this.dataSource.createQueryRunner();
-
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-
-      if (schoolData) {
-
-        await queryRunner.manager.update(SchoolData, { paciente: id }, schoolData);
-
-        await queryRunner.manager.save(paciente);
-        await queryRunner.commitTransaction();
-
-      }
-
-      // ? conviento los campos de nombre, apellidoPaterno y apellidoMaterno a mayusculas
-      paciente.nombre = paciente.nombre.toUpperCase();
-      paciente.apellidoPaterno = paciente.apellidoPaterno.toUpperCase();
-      paciente.apellidoMaterno = paciente.apellidoMaterno.toUpperCase();
-
-      return paciente;
-
-    } 
-    catch (error) {
-
-      await queryRunner.rollbackTransaction();
-      this.handleDBExceptions(error);
-
-    } 
-    finally {
-      await queryRunner.release();
+    // Actualizar las propiedades de SchoolData
+    if (updatePacienteDto.schoolData) {
+      Object.assign(paciente.schoolData, updatePacienteDto.schoolData);
     }
+  
+    // Actualizar la entidad Carrera si se proporciona en el DTO
+    if (updatePacienteDto.schoolData && updatePacienteDto.schoolData.carrera) {
+      
+      const carrera = await this.carreraRepository.findOne({ where: { id: paciente.schoolData.carrera.id } });
+      
+      if (carrera) {
+        
+        Object.assign(carrera, updatePacienteDto.schoolData.carrera);
+
+        await this.carreraRepository.save(carrera);
+      }
+    }
+  
+    // Guardar la entidad Paciente actualizada
+    await this.pacienteRepository.save(paciente);
+  
+    return paciente;
   }
+
+
+  // async update(id: string, updatePacienteDto: UpdatePacienteDto) {
+
+  //   const {schoolData, ...toUpdata } = updatePacienteDto;
+
+  //   const paciente = await this.pacienteRepository.preload({
+  //     id: id,
+  //     ...toUpdata,
+  //     schoolData: schoolData
+      
+  //   });
+
+
+  //   if(!paciente){
+  //     throw new NotFoundException(`Paciente ${id} no encontrado`);
+  //   }
+
+  //   // crear query runner para actualizar la tabla schoolData
+  //   const queryRunner = this.dataSource.createQueryRunner();
+
+  //   await queryRunner.connect();
+  //   await queryRunner.startTransaction();
+
+  //   try {
+
+  //     if (schoolData) {
+
+  //       await queryRunner.manager.update(SchoolData, { paciente: id }, schoolData);
+
+  //       await queryRunner.manager.save(paciente);
+  //       await queryRunner.commitTransaction();
+
+  //     }
+
+  //     // ? conviento los campos de nombre, apellidoPaterno y apellidoMaterno a mayusculas
+  //     paciente.nombre = paciente.nombre.toUpperCase();
+  //     paciente.apellidoPaterno = paciente.apellidoPaterno.toUpperCase();
+  //     paciente.apellidoMaterno = paciente.apellidoMaterno.toUpperCase();
+
+  //     return paciente;
+
+  //   } 
+  //   catch (error) {
+
+  //     await queryRunner.rollbackTransaction();
+  //     this.handleDBExceptions(error);
+
+  //   } 
+  //   finally {
+  //     await queryRunner.release();
+  //   }
+  // }
 
   async remove(id: string) {
     const paciente = await this.findOne(id);

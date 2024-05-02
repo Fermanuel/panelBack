@@ -1,4 +1,4 @@
-import { BeforeInsert, Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { SchoolData } from "./index";
 
 @Entity()
@@ -37,6 +37,17 @@ export class Paciente {
     })
     correoPer: string;
 
+    @Column('text', {
+        default: 'Activo',
+        nullable: true,
+    })
+    estatus: string;
+
+    @Column('text',{
+        nullable: true,
+    })
+    estadoCivil: string;
+
     @Column('text')
     genero: string;
 
@@ -51,6 +62,13 @@ export class Paciente {
 
     @BeforeInsert()
     Mayusculas(){
+        this.nombre = this.nombre.toUpperCase();
+        this.apellidoPaterno = this.apellidoPaterno.toUpperCase();
+        this.apellidoMaterno = this.apellidoMaterno.toUpperCase();
+    }
+
+    @BeforeUpdate()
+    MayusculasUpdate(){
         this.nombre = this.nombre.toUpperCase();
         this.apellidoPaterno = this.apellidoPaterno.toUpperCase();
         this.apellidoMaterno = this.apellidoMaterno.toUpperCase();
