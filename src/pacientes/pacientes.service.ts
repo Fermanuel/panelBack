@@ -81,6 +81,7 @@ export class PacientesService {
 
     } else {
       paciente = await this.pacienteRepository.findOne({
+        
         where: [{ correoPer: term.toLowerCase() }, { telefono: term }],
 
         relations: ['schoolData', 'schoolData.carrera'],
