@@ -9,6 +9,8 @@ export class CarrerasTec {
     @Column('text')
     nombre: string;
 
-    @Column('text')
+    @Column('text', {
+        nullable: true
+    })
     nomenclatura: string;
 }
