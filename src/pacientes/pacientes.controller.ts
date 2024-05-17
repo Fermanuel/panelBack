@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, ParseUUIDPipe, Query } from '@nestjs/common';
 import { PacientesService } from './pacientes.service';
 import { CreatePacienteDto } from './dto/create-paciente.dto';
-import { UpdatePacienteDto } from './dto/update-paciente.dto';
+import { UpdatePacienteDto} from './dto/update-paciente.dto';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
 @Controller('pacientes')
